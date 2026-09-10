@@ -1,175 +1,720 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import { createRoot } from "react-dom/client";
-import {
-  Home, Mail, Users, GitBranch, ArrowLeftRight, Search, Shield,
-  BriefcaseBusiness, Dumbbell, WalletCards, Trophy, Settings,
-  Bell, UserRound, Cloud, Play, ChevronRight, ChevronDown,
-  CircleHelp, TrendingUp, TrendingDown, Activity, Target, Star,
-  CalendarDays, SlidersHorizontal, Save, X, Zap, Clock3, Plus,
-  Minus, Menu, Crosshair, HeartPulse, FileText, Award
-} from "lucide-react";
 import "./styles.css";
 
-const nav = [
-  ["Home", Home], ["Inbox", Mail], ["Squad", Users], ["Tactics", GitBranch],
-  ["Transfers", ArrowLeftRight], ["Scouting", Search], ["Club", Shield],
-  ["Staff", BriefcaseBusiness], ["Training", Dumbbell], ["Finances", WalletCards],
-  ["Global Ranking", Trophy], ["Settings", Settings]
-];
-
 const players = [
-  {id:1, name:"André Onana", pos:"GK", role:"Sweeper Keeper", age:28, ovr:86, pot:88, morale:"Very Good", form:8.2, status:"First Team", number:24, nat:"🇨🇲"},
-  {id:2, name:"Altay Bayındır", pos:"GK", role:"Goalkeeper", age:26, ovr:80, pot:83, morale:"Good", form:7.2, status:"Rotation", number:1, nat:"🇹🇷"},
-  {id:3, name:"Matthijs de Ligt", pos:"CB", role:"Central Defender", age:25, ovr:85, pot:89, morale:"Very Good", form:8.0, status:"First Team", number:4, nat:"🇳🇱"},
-  {id:4, name:"Lisandro Martínez", pos:"CB", role:"Central Defender", age:26, ovr:83, pot:86, morale:"Very Good", form:7.8, status:"First Team", number:6, nat:"🇦🇷"},
-  {id:5, name:"Luke Shaw", pos:"FB", role:"Full Back", age:29, ovr:79, pot:81, morale:"Good", form:7.0, status:"Rotation", number:23, nat:"🇬🇧"},
-  {id:6, name:"Leny Yoro", pos:"CB", role:"Central Defender", age:18, ovr:78, pot:86, morale:"Good", form:7.4, status:"First Team", number:15, nat:"🇫🇷"},
-  {id:7, name:"Bruno Fernandes", pos:"AM", role:"Advanced Playmaker", age:30, ovr:88, pot:91, morale:"Excellent", form:8.8, status:"First Team", number:8, nat:"🇵🇹"},
-  {id:8, name:"Casemiro", pos:"DM", role:"Ball Winning Midfielder", age:32, ovr:82, pot:85, morale:"Good", form:7.6, status:"Rotation", number:18, nat:"🇧🇷"},
-  {id:9, name:"Kobbie Mainoo", pos:"CM", role:"Central Midfielder", age:19, ovr:80, pot:87, morale:"Good", form:8.1, status:"First Team", number:37, nat:"🇬🇧"},
-  {id:10, name:"Christian Eriksen", pos:"CM", role:"Deep Lying Playmaker", age:33, ovr:77, pot:79, morale:"Okay", form:7.0, status:"Rotation", number:14, nat:"🇩🇰"},
-  {id:11, name:"Alejandro Garnacho", pos:"LW", role:"Winger", age:20, ovr:82, pot:88, morale:"Very Good", form:8.3, status:"First Team", number:17, nat:"🇦🇷"},
-  {id:12, name:"Marcus Rashford", pos:"ST", role:"Advanced Forward", age:27, ovr:80, pot:85, morale:"Good", form:7.9, status:"Rotation", number:10, nat:"🇬🇧"},
-  {id:13, name:"Amad Diallo", pos:"RW", role:"Winger", age:22, ovr:79, pot:84, morale:"Very Good", form:7.7, status:"Rotation", number:16, nat:"🇨🇮"},
-  {id:14, name:"Rasmus Højlund", pos:"ST", role:"Poacher", age:21, ovr:82, pot:89, morale:"Very Good", form:8.4, status:"First Team", number:11, nat:"🇩🇰"},
-  {id:15, name:"Joshua Zirkzee", pos:"ST", role:"Complete Forward", age:23, ovr:79, pot:85, morale:"Good", form:7.5, status:"Rotation", number:9, nat:"🇳🇱"}
+  { id: 1, name: "Marcus Reed", position: "ST", age: 24, rating: 84, form: 8.2, morale: "Excellent", role: "Advanced Forward", club: "FMM United", status: "Fit" },
+  { id: 2, name: "Daniel Silva", position: "AM", age: 22, rating: 82, form: 7.8, morale: "Good", role: "Advanced Playmaker", club: "FMM United", status: "Fit" },
+  { id: 3, name: "Ethan Cole", position: "CM", age: 27, rating: 80, form: 7.5, morale: "Good", role: "Box-to-Box", club: "FMM United", status: "Fit" },
+  { id: 4, name: "Leo Martin", position: "LW", age: 21, rating: 79, form: 7.4, morale: "Excellent", role: "Inside Forward", club: "FMM United", status: "Fit" },
+  { id: 5, name: "James Carter", position: "CB", age: 29, rating: 81, form: 7.1, morale: "Good", role: "Central Defender", club: "FMM United", status: "Fit" },
+  { id: 6, name: "Noah Williams", position: "GK", age: 26, rating: 83, form: 7.9, morale: "Excellent", role: "Goalkeeper", club: "FMM United", status: "Fit" },
 ];
 
-const events = [
-  ["Board", "Youth Development Progress", "2h ago"],
-  ["Scout", "Scouting report: Lamine Yamal", "4h ago"],
-  ["Agent", "Transfer interest in Bruno Fernandes", "6h ago"],
-  ["Media", "Fans react to recent performance", "8h ago"]
+const leagueTable = [
+  ["FMM United", 12, 29],
+  ["Manchester City", 12, 27],
+  ["Liverpool", 12, 25],
+  ["Arsenal", 12, 23],
+  ["Chelsea", 12, 21],
+  ["Newcastle", 12, 19],
 ];
 
-function Badge({children, tone=""}) { return <span className={`badge ${tone}`}>{children}</span>; }
-function StatBar({value, max=100}) { return <div className="statbar"><span style={{width:`${Math.min(100,value/max*100)}%`}}/></div>; }
-function Panel({title, children, right}) { return <section className="panel"><div className="panel-head"><h3>{title}</h3>{right}</div>{children}</section>; }
+const navItems = [
+  "Home", "Inbox", "Squad", "Tactics", "Transfers", "Scouting",
+  "Training", "Club", "Staff", "Finances", "Global Ranking", "Settings",
+];
+
+function Panel({ title, children, right }) {
+  return (
+    <section className="panel">
+      <div className="panel-header">
+        <h2>{title}</h2>
+        {right}
+      </div>
+      <div className="panel-body">{children}</div>
+    </section>
+  );
+}
+
+function Badge({ children, tone = "default" }) {
+  return <span className={`badge badge-${tone}`}>{children}</span>;
+}
+
+function Stat({ label, value }) {
+  return (
+    <div className="stat">
+      <span className="stat-label">{label}</span>
+      <strong>{value}</strong>
+    </div>
+  );
+}
 
 function App() {
   const [page, setPage] = useState("Home");
-  const [selected, setSelected] = useState(players[0]);
-  const [mobileNav, setMobileNav] = useState(false);
-  const [speed, setSpeed] = useState("Normal");
-  const [highlights, setHighlights] = useState(false);
-  const [saved, setSaved] = useState(true);
+  const [selectedPlayer, setSelectedPlayer] = useState(players[0]);
+  const [speed, setSpeed] = useState(1);
+  const [highlights, setHighlights] = useState(true);
+  const [saved, setSaved] = useState(false);
 
-  const content = useMemo(() => ({
-    Home: <HomePage onNavigate={setPage}/>,
-    Squad: <SquadPage selected={selected} setSelected={setSelected}/>,
-    Tactics: <TacticsPage/>,
-    Transfers: <TransfersPage/>,
-    Scouting: <ScoutingPage/>,
-    Training: <TrainingPage/>,
-    Finances: <FinancesPage/>,
-    "Global Ranking": <RankingPage/>,
-    Club: <ClubPage/>,
-    Staff: <StaffPage/>,
-    Inbox: <InboxPage/>,
-    Settings: <SettingsPage/>
-  }[page] || <HomePage onNavigate={setPage}/>), [page, selected]);
+  const navigate = (target) => setPage(target);
 
-  return <div className="app">
-    <aside className={`sidebar ${mobileNav ? "open":""}`}>
-      <div className="brand"><div className="crest">MU</div><div><b>FMM26</b><small>Manager</small></div></div>
-      <button className="mobile-close" onClick={()=>setMobileNav(false)}><X/></button>
-      <nav>{nav.map(([label,Icon]) =>
-        <button key={label} className={page===label?"active":""} onClick={()=>{setPage(label);setMobileNav(false)}}>
-          <Icon size={19}/><span>{label}</span>{label==="Inbox" && <i>3</i>}
-        </button>)}</nav>
-      <div className="slogan">BIGGER<br/><span>STRONGER</span><br/>TOGETHER</div>
-    </aside>
+  const saveGame = () => {
+    setSaved(true);
+    setTimeout(() => setSaved(false), 1800);
+  };
 
-    <main className="main">
-      <header className="topbar">
-        <div className="mobile-menu"><button onClick={()=>setMobileNav(true)}><Menu/></button></div>
-        <div className="club-title"><div className="crest mini">MU</div><div><h1>Manchester United</h1><span>{page}</span></div></div>
-        <div className="top-actions">
-          <Search/><button className="save" onClick={()=>setSaved(!saved)}><Cloud size={18}/> Cloud Save <b>{saved?"✓":"!"}</b></button>
-          <Bell/><UserRound/>
-          <div className="date"><CalendarDays size={16}/> Sat 14 Dec 2024<br/><Clock3 size={14}/> 15:30</div>
-          <button className="continue"><Play size={16} fill="currentColor"/> Continue</button>
+  return (
+    <div className="app-shell">
+      <aside className="sidebar">
+        <div className="brand">
+          <div className="brand-mark">F26</div>
+          <div>
+            <div className="brand-title">FMM26</div>
+            <div className="brand-subtitle">Football Manager</div>
+          </div>
         </div>
-      </header>
-      <div className="page-wrap">{content}</div>
-      <footer className="footer">
-        <div><b>Man Utd</b><span>2nd</span><span>32 pts</span></div>
-        <div className="motto">PLAY <b>•</b> DEVELOP <b>•</b> WIN</div>
-        <div className="match-controls">
-          <Play size={14} fill="currentColor"/><label>Match Speed</label>
-          <select value={speed} onChange={e=>setSpeed(e.target.value)}><option>Very Slow</option><option>Slow</option><option>Normal</option><option>Fast</option><option>Very Fast</option></select>
-          <label>Highlights Only</label><input type="checkbox" checked={highlights} onChange={e=>setHighlights(e.target.checked)}/>
-          <Settings size={18}/>
+
+        <div className="slogan">
+          <span>BIGGER</span>
+          <span>STRONGER</span>
+          <span>TOGETHER</span>
         </div>
-      </footer>
-    </main>
-  </div>
+
+        <nav className="sidebar-nav">
+          {navItems.map((item) => (
+            <button
+              key={item}
+              className={`nav-item ${page === item ? "active" : ""}`}
+              onClick={() => navigate(item)}
+            >
+              <span className="nav-dot" />
+              {item}
+            </button>
+          ))}
+        </nav>
+
+        <div className="sidebar-footer">
+          <div className="club-mini">
+            <div className="club-badge">FM</div>
+            <div>
+              <strong>FMM United</strong>
+              <span>Premier League</span>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <main className="main-area">
+        <header className="topbar">
+          <div>
+            <div className="eyebrow">2026 / 27 SEASON</div>
+            <h1>{page}</h1>
+          </div>
+
+          <div className="topbar-actions">
+            <div className="date-box">
+              <span>Saturday</span>
+              <strong>12 September 2026</strong>
+            </div>
+            <button className="secondary-button" onClick={saveGame}>☁ Save</button>
+            <button className="primary-button" onClick={() => navigate("Inbox")}>Continue →</button>
+          </div>
+        </header>
+
+        {saved && <div className="save-message">✓ Game saved successfully</div>}
+
+        <div className="content">
+          {page === "Home" && (
+            <HomePage
+              navigate={navigate}
+              players={players}
+              leagueTable={leagueTable}
+              selectedPlayer={selectedPlayer}
+              setSelectedPlayer={setSelectedPlayer}
+            />
+          )}
+
+          {page === "Inbox" && <InboxPage navigate={navigate} />}
+          {page === "Squad" && (
+            <SquadPage
+              players={players}
+              selectedPlayer={selectedPlayer}
+              setSelectedPlayer={setSelectedPlayer}
+            />
+          )}
+          {page === "Tactics" && <TacticsPage />}
+          {page === "Transfers" && <TransfersPage />}
+          {page === "Scouting" && <ScoutingPage />}
+          {page === "Training" && <TrainingPage />}
+          {page === "Club" && <ClubPage />}
+          {page === "Staff" && <StaffPage />}
+          {page === "Finances" && <FinancesPage />}
+          {page === "Global Ranking" && (
+            <RankingPage
+              players={players}
+              setSelectedPlayer={setSelectedPlayer}
+              navigate={navigate}
+            />
+          )}
+          {page === "Settings" && <SettingsPage />}
+        </div>
+
+        <footer className="match-footer">
+          <div>
+            <span className="live-dot" />
+            Match engine ready
+          </div>
+
+          <div className="match-controls">
+            <button
+              className={highlights ? "control active" : "control"}
+              onClick={() => setHighlights(!highlights)}
+            >
+              {highlights ? "Highlights" : "Full Match"}
+            </button>
+            {[1, 2, 3].map((value) => (
+              <button
+                key={value}
+                className={speed === value ? "control active" : "control"}
+                onClick={() => setSpeed(value)}
+              >
+                {value}×
+              </button>
+            ))}
+          </div>
+        </footer>
+      </main>
+    </div>
+  );
 }
 
-function HomePage({onNavigate}) {
-  return <div className="dashboard-grid">
-    <Panel title="Next Match" right={<Badge tone="green">LIVE SAVE</Badge>}>
-      <div className="next-match"><div><small>PREMIER LEAGUE</small><b>Old Trafford</b><span>15:30</span></div><div className="vs"><strong>Man Utd</strong><em>VS</em><strong>Tottenham</strong></div><div className="recent"><small>RECENT FORM</small><div><Badge tone="green">W</Badge><Badge tone="green">W</Badge><Badge tone="gold">D</Badge><Badge tone="green">W</Badge><Badge tone="green">W</Badge></div><b>2nd +1</b><span>32 points</span></div></div>
+function HomePage({ navigate, players, leagueTable, selectedPlayer, setSelectedPlayer }) {
+  return (
+    <div className="page-grid">
+      <div className="hero-card">
+        <div>
+          <Badge tone="green">NEXT MATCH</Badge>
+          <h2>FMM United vs Liverpool</h2>
+          <p className="muted">Premier League · Old Trafford · 15:00</p>
+
+          <div className="match-preview">
+            <div className="team">
+              <div className="large-badge">FM</div>
+              <strong>FMM United</strong>
+            </div>
+            <div className="vs">VS</div>
+            <div className="team">
+              <div className="large-badge opponent">LIV</div>
+              <strong>Liverpool</strong>
+            </div>
+          </div>
+
+          <button className="primary-button" onClick={() => navigate("Tactics")}>
+            Prepare Match →
+          </button>
+        </div>
+
+        <div className="hero-stats">
+          <Stat label="League Position" value="1st" />
+          <Stat label="Points" value="29" />
+          <Stat label="Goal Difference" value="+17" />
+          <Stat label="Form" value="WWDWW" />
+        </div>
+      </div>
+
+      <div className="two-column">
+        <Panel
+          title="Club Objectives"
+          right={<button className="link" onClick={() => navigate("Club")}>View Club →</button>}
+        >
+          <div className="objective">
+            <div><strong>Win the Premier League</strong><span>Primary objective</span></div>
+            <div className="progress"><div style={{ width: "72%" }} /></div>
+            <b>72%</b>
+          </div>
+          <div className="objective">
+            <div><strong>Reach Champions League</strong><span>Board expectation</span></div>
+            <div className="progress"><div style={{ width: "88%" }} /></div>
+            <b>88%</b>
+          </div>
+        </Panel>
+
+        <Panel title="Manager">
+          <div className="manager-card">
+            <div className="manager-avatar">CM</div>
+            <div>
+              <strong>Club Manager</strong>
+              <span>Manager Level 18</span>
+              <Badge tone="green">Excellent</Badge>
+            </div>
+          </div>
+          <div className="manager-stats">
+            <Stat label="Matches" value="164" />
+            <Stat label="Wins" value="103" />
+            <Stat label="Win %" value="62.8%" />
+          </div>
+        </Panel>
+      </div>
+
+      <div className="two-column">
+        <Panel
+          title="Premier League"
+          right={<button className="link" onClick={() => navigate("Global Ranking")}>Full Table →</button>}
+        >
+          <table className="data-table">
+            <thead>
+              <tr><th>#</th><th>Club</th><th>GP</th><th>PTS</th></tr>
+            </thead>
+            <tbody>
+              {leagueTable.map((row, index) => (
+                <tr key={row[0]} className={index === 0 ? "highlight-row" : ""}>
+                  <td>{index + 1}</td><td>{row[0]}</td><td>{row[1]}</td><td><strong>{row[2]}</strong></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </Panel>
+
+        <Panel title="My Tactics" right={<button className="link" onClick={() => navigate("Tactics")}>Edit →</button>}>
+          <div className="tactic-preview">
+            <div className="pitch-mini">
+              <div className="player p1">ST</div><div className="player p2">ST</div>
+              <div className="player p3">AM</div><div className="player p4">CM</div>
+              <div className="player p5">CM</div><div className="player p6">LW</div>
+              <div className="player p7">RB</div><div className="player p8">CB</div>
+              <div className="player p9">CB</div><div className="player p10">LB</div>
+              <div className="player p11">GK</div>
+            </div>
+            <div>
+              <Badge tone="purple">SQUARE SYSTEM</Badge>
+              <h3>4-4-2</h3>
+              <p className="muted">Closest 3 players press. Others maintain shape.</p>
+            </div>
+          </div>
+        </Panel>
+      </div>
+
+      <Panel title="Key Players" right={<button className="link" onClick={() => navigate("Squad")}>View Squad →</button>}>
+        <div className="player-grid">
+          {players.slice(0, 4).map((player) => (
+            <button
+              className={`player-card ${selectedPlayer.id === player.id ? "selected" : ""}`}
+              key={player.id}
+              onClick={() => setSelectedPlayer(player)}
+            >
+              <div className="player-face">
+                {player.name.split(" ").map((word) => word[0]).join("")}
+              </div>
+              <div className="player-info">
+                <strong>{player.name}</strong>
+                <span>{player.position}</span>
+              </div>
+              <div className="player-rating">{player.rating}</div>
+            </button>
+          ))}
+        </div>
+      </Panel>
+
+      <div className="two-column">
+        <Panel title="Inbox">
+          <div className="message">
+            <span className="message-dot" />
+            <div><strong>Assistant Manager</strong><p>Training report is ready to review.</p></div>
+            <span className="time">09:42</span>
+          </div>
+          <div className="message">
+            <span className="message-dot" />
+            <div><strong>Scout Network</strong><p>New striker identified in Spain.</p></div>
+            <span className="time">Yesterday</span>
+          </div>
+          <button className="link" onClick={() => navigate("Inbox")}>Open Inbox →</button>
+        </Panel>
+
+        <Panel title="Latest Comments">
+          <div className="comment-card">
+            <div className="comment-avatar">JR</div>
+            <div><strong>James Robertson</strong><span>@footballtalk</span><p>FMM United look unstoppable this season.</p></div>
+          </div>
+          <div className="comment-card">
+            <div className="comment-avatar">SK</div>
+            <div><strong>Sarah King</strong><span>@premwatch</span><p>The Square System is becoming their identity.</p></div>
+          </div>
+        </Panel>
+      </div>
+    </div>
+  );
+}
+
+function InboxPage({ navigate }) {
+  const messages = [
+    ["STAFF", "Assistant Manager — Training Report", "Three players have improved their current training targets.", "purple"],
+    ["SCOUT", "New Scouting Report", "A promising young midfielder has been discovered.", "green"],
+    ["BOARD", "Board Meeting", "The board is pleased with current league performance.", "default"],
+    ["PLAYER", "Player Happiness", "Marcus Reed is happy with his current playing time.", "default"],
+  ];
+
+  return (
+    <div className="page-grid">
+      <Panel title="Inbox">
+        <div className="inbox-list">
+          {messages.map(([tag, title, text, tone], index) => (
+            <div className={`inbox-item ${index === 0 ? "unread" : ""}`} key={title}>
+              <Badge tone={tone}>{tag}</Badge>
+              <div><strong>{title}</strong><p>{text}</p></div>
+              <button className="link">Open</button>
+            </div>
+          ))}
+        </div>
+      </Panel>
+
+      <Panel title="Delegation">
+        <div className="delegation">
+          <div><strong>Assistant Manager</strong><p className="muted">Automatically handles routine tasks when delegation is enabled.</p></div>
+          <Badge tone="green">ACTIVE</Badge>
+        </div>
+        <div className="delegation">
+          <div><strong>Returning Player Dates</strong><p className="muted">Assistant manager monitors players returning from injury.</p></div>
+          <Badge tone="green">AUTO</Badge>
+        </div>
+        <button className="secondary-button" onClick={() => navigate("Staff")}>Manage Staff</button>
+      </Panel>
+    </div>
+  );
+}
+
+function SquadPage({ players, selectedPlayer, setSelectedPlayer }) {
+  return (
+    <div className="squad-layout">
+      <div>
+        <Panel title="First Team Squad" right={<Badge tone="green">23 PLAYERS</Badge>}>
+          <div className="squad-filters">
+            <button className="filter active">All</button><button className="filter">GK</button>
+            <button className="filter">DEF</button><button className="filter">MID</button>
+            <button className="filter">ATT</button>
+          </div>
+          <div className="roster">
+            {players.map((player) => (
+              <button
+                key={player.id}
+                className={`roster-row ${selectedPlayer.id === player.id ? "selected" : ""}`}
+                onClick={() => setSelectedPlayer(player)}
+              >
+                <div className="small-face">{player.name.split(" ").map((word) => word[0]).join("")}</div>
+                <div className="roster-name"><strong>{player.name}</strong><span>{player.role}</span></div>
+                <span className="position">{player.position}</span>
+                <span className="form">{player.form}</span>
+                <span className="rating">{player.rating}</span>
+                <Badge tone="green">{player.status}</Badge>
+              </button>
+            ))}
+          </div>
+        </Panel>
+      </div>
+      <PlayerDetails player={selectedPlayer} />
+    </div>
+  );
+}
+
+function PlayerDetails({ player }) {
+  return (
+    <div className="player-details">
+      <Panel title="Player Hub">
+        <div className="profile-header">
+          <div className="profile-face">{player.name.split(" ").map((word) => word[0]).join("")}</div>
+          <div><h2>{player.name}</h2><p>{player.role}</p><Badge tone="green">{player.morale}</Badge></div>
+          <div className="profile-rating">{player.rating}</div>
+        </div>
+        <div className="stat-grid">
+          <Stat label="Age" value={player.age} />
+          <Stat label="Position" value={player.position} />
+          <Stat label="Form" value={player.form} />
+          <Stat label="Morale" value="High" />
+        </div>
+      </Panel>
+
+      <Panel title="Attributes">
+        <div className="attribute-list">
+          <Attribute name="Pace" value={88} /><Attribute name="Shooting" value={85} />
+          <Attribute name="Passing" value={81} /><Attribute name="Dribbling" value={84} />
+          <Attribute name="Physical" value={79} /><Attribute name="Defending" value={42} />
+        </div>
+      </Panel>
+
+      <Panel title="Personality & Traits">
+        <div className="traits">
+          <Badge tone="purple">Professional</Badge><Badge tone="green">Consistent</Badge>
+          <Badge>Determined</Badge><Badge>Big Match Player</Badge>
+        </div>
+      </Panel>
+
+      <Panel title="Positional History">
+        <div className="position-history">
+          <div><span className="natural-position">ST</span><strong>Natural</strong></div>
+          <div><span>AM</span><strong>Accomplished</strong></div>
+          <div><span>RW</span><strong>Competent</strong></div>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+function Attribute({ name, value }) {
+  return (
+    <div className="attribute">
+      <div><span>{name}</span><strong>{value}</strong></div>
+      <div className="attribute-bar"><div style={{ width: `${value}%` }} /></div>
+    </div>
+  );
+}
+
+function TacticsPage() {
+  return (
+    <div className="page-grid">
+      <Panel title="Square System" right={<Badge tone="purple">4-4-2</Badge>}>
+        <div className="tactics-layout">
+          <div className="large-pitch">
+            <div className="pitch-line halfway" />
+            {[
+              ["tp1", "ST"], ["tp2", "ST"], ["tp3", "LW"], ["tp4", "CM"], ["tp5", "CM"],
+              ["tp6", "RW"], ["tp7", "LB"], ["tp8", "CB"], ["tp9", "CB"], ["tp10", "RB"], ["tp11", "GK"],
+            ].map(([className, label]) => <div className={`pitch-player ${className}`} key={className}>{label}</div>)}
+          </div>
+
+          <div className="tactical-settings">
+            <h3>Team Mentality</h3>
+            <div className="choice-row">
+              <button className="choice">Defensive</button><button className="choice active">Balanced</button><button className="choice">Attacking</button>
+            </div>
+            <h3>Pressing</h3>
+            <div className="setting-card"><strong>Press Immediately</strong><p>Closest 3 players press. Others maintain shape.</p></div>
+            <h3>Transition</h3>
+            <div className="setting-card"><strong>Fast Counter</strong><p>Immediately attack space after winning possession.</p></div>
+            <h3>Final Third</h3>
+            <div className="setting-card"><strong>Through Balls</strong><p>Prioritize through balls behind the defensive line.</p></div>
+          </div>
+        </div>
+      </Panel>
+
+      <div className="three-column">
+        <Panel title="Set Pieces"><SettingLine label="Corners" value="Near Post" /><SettingLine label="Free Kicks" value="Best Taker" /><SettingLine label="Penalties" value="Marcus Reed" /></Panel>
+        <Panel title="Player Roles"><SettingLine label="ST" value="Advanced Forward" /><SettingLine label="CM" value="Box-to-Box" /><SettingLine label="CB" value="Central Defender" /></Panel>
+        <Panel title="Automation"><SettingLine label="Match Decisions" value="Automatic" /><SettingLine label="Pressing" value="Situational" /><SettingLine label="Runs" value="Automatic" /></Panel>
+      </div>
+    </div>
+  );
+}
+
+function SettingLine({ label, value }) {
+  return <div className="setting-line"><span>{label}</span><strong>{value}</strong></div>;
+}
+
+function TransfersPage() {
+  const targets = [
+    ["Lucas Ferreira", "AM / CM · 23 years", "€42M", "82% FIT"],
+    ["Oliver Hayes", "CB · 25 years", "€35M", "76% FIT"],
+  ];
+
+  return (
+    <div className="page-grid">
+      <Panel title="Transfer Centre">
+        {targets.map(([name, info, price, fit]) => (
+          <div className="transfer-card" key={name}>
+            <div className="transfer-player"><div className="profile-face small">PL</div><div><strong>{name}</strong><span>{info}</span></div></div>
+            <div><span className="muted">Asking Price</span><strong className="money">{price}</strong></div>
+            <Badge tone="green">{fit}</Badge>
+            <button className="primary-button">Make Offer</button>
+          </div>
+        ))}
+      </Panel>
+
+      <Panel title="Bidding War Monitor">
+        <div className="bidding">
+          <div className="bidding-header"><strong>Lucas Ferreira</strong><Badge tone="purple">ACTIVE</Badge></div>
+          <div className="bid-row"><span>FMM United</span><strong>€42M</strong><Badge tone="green">Priority</Badge></div>
+          <div className="bid-row"><span>Manchester City</span><strong>€40M</strong><Badge>Competing</Badge></div>
+          <div className="bid-row"><span>Arsenal</span><strong>€37M</strong><Badge>Competing</Badge></div>
+          <p className="muted">Clubs may continue bidding until they reach their budget limit or withdraw.</p>
+          <div className="button-row"><button className="primary-button">Increase Offer</button><button className="secondary-button">Withdraw</button></div>
+        </div>
+      </Panel>
+    </div>
+  );
+}
+
+function ScoutingPage() {
+  return (
+    <div className="page-grid">
+      <div className="three-column">
+        <Panel title="Scouting Network"><Stat label="Scouts" value="8" /><Stat label="Countries" value="24" /><Stat label="Reports" value="146" /></Panel>
+        <Panel title="Current Focus"><SettingLine label="Position" value="ST" /><SettingLine label="Age" value="18–25" /><SettingLine label="Potential" value="Elite" /></Panel>
+        <Panel title="Scout Efficiency"><Stat label="Accuracy" value="91%" /><Stat label="Reports" value="34" /><Badge tone="green">Excellent</Badge></Panel>
+      </div>
+      <Panel title="Latest Scout Reports">
+        <div className="scout-row"><div className="small-face">JP</div><div><strong>Javier Perez</strong><span>ST · Spain · Age 20</span></div><Badge tone="green">91% Potential</Badge><strong>€18M</strong></div>
+        <div className="scout-row"><div className="small-face">AK</div><div><strong>Adam Khan</strong><span>CM · England · Age 19</span></div><Badge tone="purple">88% Potential</Badge><strong>€12M</strong></div>
+      </Panel>
+    </div>
+  );
+}
+
+function TrainingPage() {
+  const days = [["Mon", "Recovery"], ["Tue", "Possession"], ["Wed", "Attacking"], ["Thu", "Pressing"], ["Fri", "Set Pieces"], ["Sat", "Match"], ["Sun", "Rest"]];
+
+  return (
+    <div className="page-grid">
+      <Panel title="Weekly Training">
+        <div className="training-grid">
+          {days.map(([day, session]) => (
+            <div className="training-day" key={day}>
+              <span>{day}</span><strong>{session}</strong>
+              <Badge tone={session === "Match" ? "purple" : "green"}>{session === "Match" ? "MATCH" : "TEAM"}</Badge>
+            </div>
+          ))}
+        </div>
+      </Panel>
+
+      <div className="two-column">
+        <Panel title="Player Development"><Attribute name="Technical" value={82} /><Attribute name="Mental" value={76} /><Attribute name="Physical" value={79} /></Panel>
+        <Panel title="Assistant Manager"><p className="muted">The assistant manager will automatically adjust individual workloads when required.</p><Badge tone="green">AUTOMATIC</Badge></Panel>
+      </div>
+    </div>
+  );
+}
+
+function ClubPage() {
+  return (
+    <div className="page-grid">
+      <div className="hero-card compact">
+        <div><Badge tone="purple">FMM UNITED</Badge><h2>A club moving forward</h2><p className="muted">Building a stronger squad, stronger identity and stronger future.</p></div>
+        <div className="club-badge giant">FM</div>
+      </div>
+
+      <div className="three-column">
+        <Panel title="Reputation"><Stat label="World Reputation" value="4.5 ★" /><Stat label="League Reputation" value="5.0 ★" /></Panel>
+        <Panel title="Facilities"><Stat label="Training" value="18/20" /><Stat label="Youth" value="17/20" /></Panel>
+        <Panel title="Trophies"><Stat label="League Titles" value="14" /><Stat label="European Cups" value="3" /></Panel>
+      </div>
+
+      <Panel title="Board Objectives">
+        <div className="objective-row"><strong>Win the Premier League</strong><Badge tone="green">ON TRACK</Badge></div>
+        <div className="objective-row"><strong>Develop young players</strong><Badge tone="green">ON TRACK</Badge></div>
+        <div className="objective-row"><strong>Reach Champions League Quarter Final</strong><Badge>IN PROGRESS</Badge></div>
+      </Panel>
+    </div>
+  );
+}
+
+function StaffPage() {
+  return (
+    <div className="page-grid">
+      <div className="three-column">
+        <StaffCard initials="AM" name="Assistant Manager" role="First Team" rating="18" />
+        <StaffCard initials="SC" name="Head Scout" role="Scouting" rating="19" />
+        <StaffCard initials="TC" name="Head Coach" role="Training" rating="18" />
+      </div>
+
+      <Panel title="Delegated Responsibilities">
+        <SettingLine label="Training adjustments" value="Automatic" />
+        <SettingLine label="Injury monitoring" value="Automatic" />
+        <SettingLine label="Returning players" value="Automatic" />
+        <SettingLine label="Routine inbox" value="Automatic" />
+      </Panel>
+    </div>
+  );
+}
+
+function StaffCard({ initials, name, role, rating }) {
+  return (
+    <Panel title={role}>
+      <div className="staff-card"><div className="profile-face small">{initials}</div><div><strong>{name}</strong><span>Staff rating {rating}/20</span></div></div>
     </Panel>
-    <Panel title="Club Objectives"><ul className="check-list"><li>✓ Win the Premier League</li><li>✓ Reach the Champions League QF</li><li>○ Develop 3 Youth Players</li><li>○ Maintain Financial Stability</li></ul></Panel>
-    <Panel title="Manager"><div className="manager-card"><div className="avatar">C</div><div><b>Cyprian</b><small>Level 1 Manager</small><StatBar value={120} max={500}/><small>120 / 500 XP</small></div></div><hr/><h4>Notifications <Badge tone="green">3 new</Badge></h4><p>🟢 Garnacho is back from injury</p><p>🟢 Scout report available: L. Yamal</p><p>🔵 Transfer bid received for Casemiro</p></div></Panel>
-    <Panel title="Premier League" right={<button className="link" onClick={()=>onNavigate("Club")}>View Table ›</button>}><LeagueTable/></Panel>
-    <Panel title="My Tactics" right={<Badge tone="green">4-4-2</Badge>}><Pitch compact/><div className="tactic-mini"><b>Square System</b><span>Counter • High Press • Balanced Width</span><button onClick={()=>onNavigate("Tactics")}>Edit Tactics →</button></div></Panel>
-    <Panel title="Key Players" right={<button className="link" onClick={()=>onNavigate("Squad")}>View Squad ›</button>}><div className="key-list">{players.slice(6,11).map(p=><div key={p.id}><div className="avatar small">{p.name[0]}</div><span><b>{p.name}</b><small>{p.pos}</small></span><strong>{p.form}</strong></div>)}</div></Panel>
-    <Panel title="Inbox"><div className="event-list">{events.map(e=><div key={e[1]}><span className="event-icon"><Mail size={15}/></span><span><b>{e[0]}</b><small>{e[1]}</small></span><time>{e[2]}</time></div>)}</div></Panel>
-    <Panel title="Latest Comments"><div className="comment">@UTD_Fanatic <b>Love the way we are playing lately!</b><small>♥ 1.2k</small></div><div className="comment">@FootballTalk <b>That midfield is something else.</b><small>♥ 856</small></div><div className="comment">@PremierLeague <b>Could they challenge for the title?</b><small>♥ 742</small></div></Panel>
-    <Panel title="Global Ranking"><RankingTable/></Panel>
-    <Panel title="Upcoming Events"><div className="event-list"><div><Badge>14 Dec</Badge><span><b>Web Summit</b><small>9:00 PM</small></span><Badge tone="green">Paid</Badge></div><div><Badge>12 Dec</Badge><span><b>Hirodonts</b><small>8:00 PM</small></span><Badge tone="green">Paid</Badge></div><div><Badge>10 Dec</Badge><span><b>Bulsa</b><small>4:00 PM</small></span><Badge tone="green">Paid</Badge></div><div><Badge>08 Dec</Badge><span><b>DHL</b><small>10:00 AM</small></span></div></div></Panel>
-  </div>
+  );
 }
 
-function LeagueTable(){return <table className="table"><thead><tr><th>#</th><th>Club</th><th>P</th><th>GD</th><th>Pts</th></tr></thead><tbody>{[["Liverpool",16,"+22",37],["Man Utd",16,"+18",32],["Man City",16,"+16",31],["Arsenal",16,"+14",30],["Aston Villa",16,"+8",28],["Tottenham",16,"+6",26]].map((r,i)=><tr className={i===1?"selected":""} key={r[0]}><td>{i+1}</td><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td><td><b>{r[3]}</b></td></tr>)}</tbody></table>}
+function FinancesPage() {
+  return (
+    <div className="page-grid">
+      <div className="three-column">
+        <Panel title="Balance"><div className="financial-number">€184.6M</div><span className="muted">Available balance</span></Panel>
+        <Panel title="Transfer Budget"><div className="financial-number">€76.2M</div><span className="muted">Available to spend</span></Panel>
+        <Panel title="Wage Budget"><div className="financial-number">€2.4M</div><span className="muted">Weekly remaining</span></Panel>
+      </div>
 
-function RankingTable(){return <table className="table"><thead><tr><th>#</th><th>Player</th><th>Pos</th><th>Rating</th><th>Trend</th></tr></thead><tbody>{[["Jude Bellingham","CM",94,"▲"],["Kylian Mbappé","ST",93,"▲"],["Erling Haaland","ST",92,"▲"],["Vinícius Jr.","LW",91,"▲"],["Rodri","DM",90,"▲"],["Salah","RW",89,"▼"],["De Bruyne","AM",88,"▼"],["B. Fernandes","AM",87,"▲"]].map((r,i)=><tr key={r[0]}><td>{i+1}</td><td className="rank-player">{r[0]}</td><td>{r[1]}</td><td><b>{r[2]}</b></td><td className={r[3]==="▲"?"up":"down"}>{r[3]}</td></tr>)}</tbody></table>}
-
-function SquadPage({selected,setSelected}) {
-  return <div className="two-col"><div className="wide"><Panel title="Squad" right={<div className="filters"><button className="active">All (28)</button><button>GK (3)</button><button>DF (8)</button><button>MF (10)</button><button>ST (7)</button><select><option>Position</option></select><select><option>Overall</option></select></div>}><div className="tabs"><b>Squad</b><span>Depth Chart</span><span>Nationalities</span><span>Contract Status</span><span>Player Search</span></div><table className="table roster"><thead><tr><th>#</th><th>Pos</th><th>Name</th><th>Nat</th><th>Age</th><th>Ovr</th><th>Pot</th><th>Morale</th><th>Form</th><th>Status</th></tr></thead><tbody>{players.map(p=><tr key={p.id} className={selected.id===p.id?"selected":""} onClick={()=>setSelected(p)}><td>{p.number}</td><td><Badge>{p.pos}</Badge></td><td className={p.id===3||p.id===7?"yellow-name":""}>{p.name}</td><td>{p.nat}</td><td>{p.age}</td><td><b>{p.ovr}</b></td><td>{p.pot}</td><td>● {p.morale}</td><td><span className="form-dots">▮▮▮</span> {p.form}</td><td><Badge tone={p.status==="First Team"?"green":""}>{p.status}</Badge></td></tr>)}</tbody></table></Panel></div><PlayerPanel player={selected}/></div>
+      <Panel title="Financial Overview">
+        <div className="finance-row"><span>Matchday income</span><strong>+€1.8M</strong></div>
+        <div className="finance-row"><span>Commercial income</span><strong>+€3.2M</strong></div>
+        <div className="finance-row"><span>Wages</span><strong>-€1.7M</strong></div>
+        <div className="finance-row"><span>Transfers</span><strong>-€12.0M</strong></div>
+        <div className="finance-row total"><span>Net movement</span><strong>+€1.3M</strong></div>
+      </Panel>
+    </div>
+  );
 }
 
-function PlayerPanel({player}) {
- return <div className="side-stack"><Panel title="Player"><div className="player-hero"><div className="avatar portrait">{player.name[0]}</div><div><h2>{player.name}</h2><b>{player.role}</b><small>{player.nat} • {player.age} years old</small></div><strong className="ovr">{player.ovr}</strong></div><div className="player-tabs"><b>Overview</b><span>Attributes</span><span>Stats</span><span>Contract</span><span>Happiness</span></div><div className="player-info-grid"><div><small>Preferred Foot</small><b>Right</b></div><div><small>Height</small><b>190 cm</b></div><div><small>Weight</small><b>90 kg</b></div><div><small>Personality</small><b>Balanced</b></div></div></Panel>
- <Panel title="Player Traits"><div className="traits"><span>● Shot Stopper</span><span>● Composure</span><span>● Leadership</span><span>● Distribution</span><span className="purple">◉ Determination</span><span className="purple">◉ Professionalism</span><span className="purple">◉ Consistent</span><span className="purple">◉ Big Game Player</span></div></Panel>
- <Panel title="Player Performance"><Metric label="Playtime" value={8.5}/><Metric label="Form" value={player.form}/><Metric label="Promise" value={7.5}/><div className="morale">😄 {player.morale}</div></Panel>
- <Panel title="Contract"><div className="contract"><span>Expires <b>30 Jun 2028</b></span><span>Wage <b>£150,000 / week</b></span><button>Offer New Contract</button></div></Panel></div>
+function RankingPage({ players, setSelectedPlayer, navigate }) {
+  return (
+    <div className="page-grid">
+      <Panel title="Global Player Ranking">
+        <p className="muted">Top 100 players are highlighted. Select a player to open their profile.</p>
+        <div className="ranking-list">
+          {players.map((player, index) => (
+            <button
+              className="ranking-row"
+              key={player.id}
+              onClick={() => { setSelectedPlayer(player); navigate("Squad"); }}
+            >
+              <span className="rank-number">{index + 1}</span>
+              <div className="ranking-face">{player.name.split(" ").map((word) => word[0]).join("")}</div>
+              <div className="ranking-player"><strong>{player.name}</strong><span>{player.position}</span></div>
+              <span className="ranking-movement up">▲ +{index + 2}</span>
+              <strong className="ranking-rating">{player.rating}</strong>
+            </button>
+          ))}
+        </div>
+      </Panel>
+    </div>
+  );
 }
 
-function Metric({label,value}){return <div className="metric"><span>{label}</span><StatBar value={value} max={10}/><b>{value}</b></div>}
+function SettingsPage() {
+  const [autoSave, setAutoSave] = useState(true);
+  const [autoContinue, setAutoContinue] = useState(false);
+  const [sound, setSound] = useState(true);
 
-function Pitch({compact=false}){let names=["Rashford","Højlund","Fernandes","Mainoo","Casemiro","Antony","Shaw","Martínez","Maguire","Dalot","Onana"];return <div className={`pitch ${compact?"compact":""}`}>{names.map((n,i)=><div key={n} className={`marker m${i}`}><b>{i===10?1:i<2?i+9:i+5}</b><small>{n}</small></div>)}</div>}
+  return (
+    <div className="page-grid">
+      <Panel title="Game Settings">
+        <Toggle label="Automatic Save" description="Save the game automatically during progression." enabled={autoSave} setEnabled={setAutoSave} />
+        <Toggle label="Automatic Continue" description="Allow the game to progress when appropriate." enabled={autoContinue} setEnabled={setAutoContinue} />
+        <Toggle label="Match Sounds" description="Enable match engine audio effects." enabled={sound} setEnabled={setSound} />
+      </Panel>
 
-function TacticsPage(){
- const [mentality,setMentality]=useState("Balanced");
- const [press,setPress]=useState("Very High");
- return <div className="tactics-grid"><Panel title="Tactic Overview"><h2>Square System</h2><p>Solid defensively, quick transitions, clinical in attack.</p><div className="big-progress">Tactical Familiarity <b>88%</b><StatBar value={88}/></div><div className="instruction-list"><div>⚡ Attacking Style <b>Counter Attack</b></div><div>🛡 Defensive Style <b>High Press</b></div><div>↔ Width <b>Balanced</b></div><div>⏱ Tempo <b>Fast</b></div><div>➜ Passing Style <b>Direct</b></div></div></Panel>
- <Panel title="Formation" right={<Badge tone="green">Active</Badge>}><div className="tactic-top"><select><option>Square System</option><option>Custom</option></select><select><option>4-4-2</option><option>4-3-3</option><option>4-2-3-1</option></select></div><Pitch/></Panel>
- <Panel title="Player Roles"><div className="role-list">{players.slice(0,11).map(p=><div key={p.id}><Badge>{p.pos}</Badge><span>{p.role}</span><select defaultValue={p.name}><option>{p.name}</option></select></div>)}</div></Panel>
- <Panel title="Tactical Instructions"><div className="instruction-box"><h4>In Possession</h4><p>Shorter Passing</p><p>Play Out Of Defence</p><p>Focus Play Through Middle</p><p>Higher Tempo</p><p>Wide Attack</p><h4>In Transition</h4><p>Counter Press</p><p>Quick Transitions</p><p>Distribute Quickly</p><h4>Out Of Possession</h4><p>High Press</p><p>Higher Defensive Line</p><p>Higher Line Of Engagement</p><p>Use Offside Trap</p></div></Panel>
- <Panel title="Controls"><label>Team Mentality</label><select value={mentality} onChange={e=>setMentality(e.target.value)}>{["Very Defensive","Defensive","Balanced","Attacking","Very Attacking"].map(x=><option key={x}>{x}</option>)}</select><label>Pressing</label><select value={press} onChange={e=>setPress(e.target.value)}>{["Very Low","Low","Balanced","High","Very High"].map(x=><option key={x}>{x}</option>)}</select><p className="auto-note"><Zap size={16}/> Other tactical interactions are handled automatically by the match engine.</p></Panel>
- <Panel title="Set Pieces"><div className="setpieces"><span>Corners & Free Kicks <b>Bruno Fernandes</b></span><span>Free Kicks <b>Christian Eriksen</b></span><span>Penalties <b>Casemiro</b></span></div></Panel>
- </div>
+      <Panel title="Match Engine">
+        <SettingLine label="Simulation" value="2D" />
+        <SettingLine label="3D Animations" value="Disabled" />
+        <SettingLine label="Highlights" value="Available" />
+        <SettingLine label="Speed Controls" value="1× / 2× / 3×" />
+      </Panel>
+
+      <Panel title="Game Identity">
+        <div className="identity-preview"><div className="brand-mark">F26</div><div><strong>FMM26</strong><span>BIGGER · STRONGER · TOGETHER</span></div></div>
+      </Panel>
+    </div>
+  );
 }
 
-function TransfersPage(){return <div className="dashboard-grid"><Panel title="Transfer Centre"><div className="tabs"><b>Transfer Centre</b><span>Shortlist</span><span>Search Players</span><span>Transfer History</span></div><table className="table"><thead><tr><th>Player</th><th>Club</th><th>Position</th><th>Fee</th><th>Status</th></tr></thead><tbody>{[["L. Yamal","Barcelona","AM (R)", "€120M","Target"],["V. Osimhen","Napoli","ST","€100M","Negotiation"],["J. Nives","Al Hilal","CM","€60M","Bid"],["N. Timber","Napoli","RB","€50M","Scouting"],["R. Cherki","Lyon","AM (C)","€45M","Watching"]].map(r=><tr key={r[0]}><td>{r[0]}</td><td>{r[1]}</td><td>{r[2]}</td><td>{r[3]}</td><td><Badge tone="green">{r[4]}</Badge></td></tr>)}</tbody></table></Panel><Panel title="Bidding War Monitor"><div className="bid"><h2>Lamine Yamal</h2><p>Asking price <b>€120M</b></p><div className="bid-row"><span>Manchester United</span><strong>€126M</strong><Badge tone="green">Priority 78%</Badge></div><div className="bid-row"><span>PSG</span><strong>€124M</strong><Badge>Active</Badge></div><div className="bid-row"><span>Real Madrid</span><strong>€118M</strong><Badge>Active</Badge></div><button className="primary">Accept / Withdraw</button></div></Panel></div>}
+function Toggle({ label, description, enabled, setEnabled }) {
+  return (
+    <div className="toggle-row">
+      <div><strong>{label}</strong><p>{description}</p></div>
+      <button className={`toggle ${enabled ? "on" : ""}`} onClick={() => setEnabled(!enabled)}><span /></button>
+    </div>
+  );
+}
 
-function ScoutingPage(){return <div className="dashboard-grid"><Panel title="Scout Network"><div className="world-map">WORLD<br/><b>12 SCOUTS</b></div><div className="scout-cards">{["L. Yamal","V. Osimhen","M. Guéhi","J. Nives"].map((x,i)=><div key={x}><div className="avatar small">{x[0]}</div><span><b>{x}</b><small>{["AM (R)","ST","CB","CM"][i]}</small></span><strong>{8.9-i*.4}</strong></div>)}</div></Panel><Panel title="Assignments"><div className="assignment">{["Barcelona","Napoli","Crystal Palace","Al Hilal","Inter"].map((x,i)=><div key={x}><span>{x}</span><Badge>{i+2} days</Badge></div>)}</div></Panel><Panel title="Latest Reports"><div className="report"><b>Lamine Yamal</b><span>AM (R) • OVR 89</span><strong>8.9</strong><p>Exceptional dribbling and chance creation. Strong tactical fit.</p></div><div className="report"><b>V. Osimhen</b><span>ST • OVR 88</span><strong>8.6</strong><p>Clinical forward with strong physical profile.</p></div></Panel></div>}
-
-function TrainingPage(){return <div className="dashboard-grid"><Panel title="Training Focus"><h2>Balanced</h2><StatBar value={85}/><div className="circle-score">85%</div><div className="training-list"><span>Tactical Awareness <b>8.5</b></span><span>Ball Control <b>8.0</b></span><span>Technical <b>8.0</b></span><span>Mentality <b>7.8</b></span></div></Panel><Panel title="Weekly Schedule"><div className="schedule">{["Mon","Tue","Wed","Thu","Fri","Sat","Sun"].map((d,i)=><div key={d}><b>{d}</b><span>{["Recovery","Tactical","Tactical","Physical","Tactical","Match","Rest"][i]}</span></div>)}</div></Panel><Panel title="Performance Impact"><div className="impact"><span>Training is improving team cohesion and fitness.</span><Badge tone="green">Positive</Badge></div></Panel></div>}
-
-function FinancesPage(){return <div className="dashboard-grid"><Panel title="Financial Overview"><div className="finance-big"><span><b>£320M</b> Total Balance</span><span><b>£45M</b> Monthly Profit</span><span><b>£612M</b> Transfer Budget</span></div><div className="bars"><i style={{height:"55%"}}/><i style={{height:"75%"}}/><i style={{height:"42%"}}/><i style={{height:"88%"}}/><i style={{height:"68%"}}/></div></Panel><Panel title="Key Financials"><div className="money-list"><span>R. Højlund <b>£12.4M</b></span><span>Rashford <b>£18.7M</b></span><span>D. Baba <b>£14.2M</b></span><span>Carlos Lago <b>£20.0M</b></span></div></Panel><Panel title="Board Confidence"><div className="big-progress">Financial Fair Play <b>Compliant</b><StatBar value={86}/></div></Panel></div>}
-
-function RankingPage(){return <div className="two-col"><Panel title="Global Ranking"><RankingTable/><RankingTable/></Panel><Panel title="Selected Player"><div className="player-hero"><div className="avatar portrait">M</div><div><h2>Kylian Mbappé</h2><b>ST • Paris Saint-Germain</b><small>Global Rank #2</small></div><strong className="ovr">93</strong></div><h3>Global Stats</h3><div className="stats-grid"><b>Goals<br/><span>558</span></b><b>Assists<br/><span>187</span></b><b>Avg Rating<br/><span>8.6</span></b></div><button className="primary">View Player →</button></Panel></div>}
-
-function ClubPage(){return <div className="dashboard-grid"><Panel title="Club Overview"><div className="club-banner"><div className="crest large">MU</div><div><h2>Manchester United</h2><p>Premier League • Old Trafford</p><p>Capacity 75,321</p></div></div></Panel><Panel title="Trophy Cabinet"><div className="trophies"><b>🏆 20<br/><small>Premier League</small></b><b>🏆 3<br/><small>Champions League</small></b><b>🏆 12<br/><small>FA Cup</small></b><b>🏆 6<br/><small>League Cup</small></b></div></Panel><Panel title="Club Vision"><ul className="check-list"><li>✓ Win the Premier League</li><li>✓ Reach the Champions League QF</li><li>○ Develop Youth Players</li><li>○ Build a Sustainable Future</li></ul></Panel></div>}
-
-function StaffPage(){return <div className="dashboard-grid"><Panel title="Coaching Staff"><div className="staff-grid">{["Erik ten Hag","Steve McClaren","Benny McCarthy","Andreas Georgson"].map((x,i)=><div className="staff-card" key={x}><div className="avatar">{x[0]}</div><b>{x}</b><small>{["Head Coach","Assistant Manager","Striker Coach","Set Piece Coach"][i]}</small><strong>{8.1+i*.2}</strong></div>)}</div></Panel><Panel title="Staff Morale"><div className="circle-score">8.5</div><p>Excellent. Staff cohesion is improving.</p></Panel></div>}
-
-function InboxPage(){return <div className="two-col"><Panel title="Inbox"><div className="inbox-full">{events.concat([["Board","Season objectives review","Yesterday"],["Medical","Training availability update","Yesterday"]]).map(e=><div key={e[1]}><span className="event-icon"><Mail/></span><div><b>{e[0]}</b><h3>{e[1]}</h3></div><time>{e[2]}</time><ChevronRight/></div>)}</div></Panel><Panel title="Assistant Manager"><div className="assistant"><div className="avatar large">A</div><h2>Delegation Centre</h2><p>Set return dates, training tasks and routine decisions for automatic assistant-manager handling.</p><button className="primary">Open Delegation</button></div></Panel></div>}
-
-function SettingsPage(){return <div className="two-col"><Panel title="Game Settings"><div className="settings-list"><label>Match event cards <input type="checkbox" defaultChecked/></label><label>Text commentary <input type="checkbox" defaultChecked/></label><label>2D match simulation <input type="checkbox" defaultChecked/></label><label>Automatic tactical decisions <input type="checkbox" defaultChecked/></label><label>Cloud saves <input type="checkbox" defaultChecked/></label></div></Panel><Panel title="Interface"><div className="theme-preview"><div/><div/><div/><b>Navy • Purple • Lime Green</b></div><p>No 3D animations. Static player renders are used for event cards and profiles.</p></Panel></div>}
-
-createRoot(document.getElementById("root")).render(<App/>);
+createRoot(document.getElementById("root")).render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);
